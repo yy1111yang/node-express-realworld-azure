@@ -8,6 +8,7 @@ var http = require('http'),
     passport = require('passport'),
     errorhandler = require('errorhandler'),
     mongoose = require('mongoose');
+    CONF = require('./config');
 
 var isProduction = process.env.NODE_ENV === 'production';
 
@@ -29,13 +30,24 @@ app.use(session({ secret: 'conduit', cookie: { maxAge: 60000 }, resave: false, s
 if (!isProduction) {
   app.use(errorhandler());
 }
-
+var mongoUrl = "mongodb://"+CONF.COSMOSDB_HOST+":"+CONF.COSMOSDB_PORT+"/"+CONF.COSMOSDB_DBNAME+"?ssl=true&replicaSet=globaldb"
+mongoose.connect(mongoUrl, {
+  auth: {
+      user: CONF.COSMOSDB_USER,
+      password: CONF.COSMOSDB_PASSWORD
+  },
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  retryWrites: false
+});
 if(isProduction){
-  mongoose.connect(process.env.MONGODB_URI);
+  // mongoose.connect(process.env.MONGODB_URI);
 } else {
-  mongoose.connect('mongodb://localhost/conduit');
+  // mongoose.connect('mongodb://localhost/conduit');
+  // mongoose.set('debug', true);
   mongoose.set('debug', true);
 }
+
 
 require('./models/User');
 require('./models/Article');
