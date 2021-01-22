@@ -40,14 +40,9 @@ mongoose.connect(mongoUrl, {
   useUnifiedTopology: true,
   retryWrites: false
 });
-if(isProduction){
-  // mongoose.connect(process.env.MONGODB_URI);
-} else {
-  // mongoose.connect('mongodb://localhost/conduit');
-  // mongoose.set('debug', true);
+if(!isProduction){
   mongoose.set('debug', true);
 }
-
 
 require('./models/User');
 require('./models/Article');
